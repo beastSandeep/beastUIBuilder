@@ -1,19 +1,19 @@
 import { useEffect, useState } from "react";
 import Axis from "./Axis";
 
-const components = [
-  {
-    name: "buttons",
-    contents: [
-      { name: "img1", src: "/img1.jpg", elment: "", style: "" },
-      { name: "img3", src: "/img2.jpg", elment: "", style: "" },
-      { name: "img8", src: "/img1.jpg", elment: "", style: "" },
-      { name: "img2", src: "/img2.jpg", elment: "", style: "" },
-    ],
-  },
-  { name: "boxes", contents: [] },
-  { name: "badges", contents: [] },
-];
+// const components = [
+//   {
+//     name: "buttons",
+//     contents: [
+//       { name: "img1", src: "/img1.jpg", elment: "", style: "" },
+//       { name: "img3", src: "/img2.jpg", elment: "", style: "" },
+//       { name: "img8", src: "/img1.jpg", elment: "", style: "" },
+//       { name: "img2", src: "/img2.jpg", elment: "", style: "" },
+//     ],
+//   },
+//   { name: "boxes", contents: [] },
+//   { name: "badges", contents: [] },
+// ];
 
 function App() {
   const [axis, setAixs] = useState({ top: "50%", left: "50%" });
@@ -42,13 +42,51 @@ function App() {
     };
   }, []);
 
-  function setUnderLimiter(num, limiter) {
-    return num % limiter < 0 ? num % limiter : num;
+  function setUnderLimiter(x, screenSize, width) {
+    return x + Math.ceil(width) >= screenSize
+      ? Math.ceil((x - Math.ceil(width)) % screenSize)
+      : Math.ceil(x % screenSize);
+  }
+
+  function onDragHandler(e) {
+    // setting new mouse position
+    // console.log("dragging...");
+    setAixs({
+      top: `${e.clientY}px`,
+      left: `${e.clientX}px`,
+    });
+  }
+
+  function onDragEndHandler(e) {
+    // console.log("dragging ends");
+    // setting new position from current mouse position
+
+    // console.log(
+    //   `func : ${setUnderLimiter(
+    //     e.clientX,
+    //     screenSize.screenW,
+    //     e.target.getBoundingClientRect().width
+    //   )}`,
+    //   "\n",
+    //   `clientX : ${e.clientX}`,
+    //   "\n",
+    //   `screenW : ${screenSize.screenW}`,
+    //   "\n",
+    //   `element width : ${e.target.getBoundingClientRect().width}`
+    // );
+    setAixs({ top: `${e.clientY}px`, left: `${e.clientX}px` });
+
+    e.target.style.left = `${setUnderLimiter(
+      e.clientX,
+      screenSize.screenW,
+      e.target.getBoundingClientRect().width
+    )}px`;
+    e.target.style.top = `${e.clientY}px`;
   }
 
   return (
     <>
-      <main className="flex justify-between">
+      <main className="flex justify-between overflow-x-hidden">
         <Axis top={axis.top} left={axis.left}></Axis>
 
         {/* components */}
@@ -88,34 +126,20 @@ function App() {
               // console.log("dradding started");
               // storing intial position
             }}
-            onDrag={(e) => {
-              // setting new mouse position
-              console.log(e);
-              setAixs({
-                top: `${e.clientY}px`,
-                left: `${e.clientX}px`,
-              });
-              console.log("dragging...");
-            }}
-            onDragEnd={(e) => {
-              // console.log("dragging ends");
-              // setting new position from current rect
-              setAixs({ top: `${e.clientY}px`, left: `${e.clientX}px` });
-              e.target.style.left = `${e.clientX}px`;
-              e.target.style.top = `${e.clientY}px`;
-            }}
-            onDragExit={() => {
-              console.log("onDragExit");
-            }}
-            onDragOver={() => {
-              console.log("somthing is over us");
-            }}
-            onDragLeave={() => {
-              console.log("somthing is leaving us");
-            }}
-            onDrop={() => {
-              console.log("somthing is dropped");
-            }}
+            onDrag={onDragHandler}
+            onDragEnd={onDragEndHandler}
+            // onDragExit={() => {
+            //   console.log("onDragExit");
+            // }}
+            // onDragOver={() => {
+            //   console.log("somthing is over us");
+            // }}
+            // onDragLeave={() => {
+            //   console.log("somthing is leaving us");
+            // }}
+            // onDrop={() => {
+            //   console.log("somthing is dropped");
+            // }}
             className="btn rounded-none btn-primary"
           >
             hello
