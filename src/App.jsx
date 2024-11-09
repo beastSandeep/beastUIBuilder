@@ -2,7 +2,10 @@ import { useEffect, useState } from "react";
 import Axis from "./Axis";
 import DragableItem from "./DragableItem";
 import Divider from "./Divider";
+import Tabs from "./Tabs";
+import ActiveTab from "./ActiveTab";
 
+import { data_tabs } from "./constants";
 // const components = [
 //   {
 //     name: "buttons",
@@ -19,10 +22,10 @@ import Divider from "./Divider";
 
 function App() {
   const [axis, setAixs] = useState({ top: 0, left: 0 });
-
   const [topHeight, setTopHeight] = useState(530); // Default height for the top section
-
+  const [leftWidth, setLeftWidth] = useState(960); // Default width for the top section
   const [isCtrlPressed, setIsCtrlPressed] = useState(false);
+  const [activeTab, setActiveTab] = useState(null);
 
   useEffect(() => {
     // Function to handle the keydown event
@@ -52,7 +55,7 @@ function App() {
     };
   }, []);
 
-  function mouseTrack(e) {
+  function axisSetter(e) {
     setAixs({
       top: `${e.pageY}px`,
       left: `${e.pageX}px`,
@@ -67,8 +70,8 @@ function App() {
       >
         {/* main screen starts */}
         <section
-          onMouseEnter={mouseTrack}
-          onMouseMove={mouseTrack}
+          onMouseEnter={axisSetter}
+          onMouseMove={axisSetter}
           onDragOver={(e) => {
             e.preventDefault();
           }}
@@ -84,16 +87,44 @@ function App() {
           {Array(2)
             .fill("_")
             .map((e, i) => (
-              <DragableItem key={i} text={`Sandeep ${i + 1}`} />
+              <DragableItem
+                key={i}
+                text={`Sandeep ${i + 1}`}
+                onDrag={axisSetter}
+              />
             ))}
         </section>
 
         {/* divider */}
-
-        <Divider setTopHeight={setTopHeight} />
+        <Divider onChange={setTopHeight} />
 
         {/* elements + properties */}
-        <section className="relative z-[1] overflow-auto flex-1 bg-gray-700"></section>
+        <section
+          id="sideContainer"
+          className="relative z-[1] overflow-auto flex flex-1 bg-gray-700"
+        >
+          {/* elements */}
+          <main className="" style={{ width: `${leftWidth}px` }}>
+            left section
+          </main>
+
+          {/* divider */}
+          <Divider
+            id="sideContainer"
+            onChange={setLeftWidth}
+            isVertical={true}
+          />
+
+          {/* properties */}
+          <main
+            className="bg-white "
+            style={{ width: `calc(100% - ${leftWidth}px)` }}
+          >
+            <Tabs data={data_tabs} onClick={setActiveTab}>
+              <ActiveTab activeTab={activeTab}></ActiveTab>
+            </Tabs>
+          </main>
+        </section>
       </main>
     </>
   );

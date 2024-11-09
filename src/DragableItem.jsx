@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import { useRef } from "react";
 
-function DragableItem({ text = "Hello", className }) {
+function DragableItem({ text = "Hello", className, onDrag }) {
   let startX = useRef(0);
   let startY = useRef(0);
 
@@ -45,6 +45,7 @@ function DragableItem({ text = "Hello", className }) {
     <button
       draggable
       onDragStart={onDragStartHandler}
+      onDrag={onDrag}
       onDragEnd={onDragEndHandler}
       // onDragExit={() => {
       //   console.log("onDragExit");
